@@ -13,17 +13,17 @@ public abstract class Ant
 
   protected boolean pickupWater(AntData ant)
   {
-    if(LandType.WATER)
-    {
-      nextAction.type = AntAction.AntActionType.PICKUP;
-      nextAction.direction = direction;
-    }
+//    if(LandType.WATER)
+//    {
+//      nextAction.type = AntAction.AntActionType.PICKUP;
+//      nextAction.direction = direction;
+//    }
     return false;
   }
 
   protected boolean pickupFood(AntData ant, Direction direction)
   {
-    if()
+    return  false;
   }
 
 

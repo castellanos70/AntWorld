@@ -46,7 +46,7 @@ public class ClientRandomWalk
     isConnected = openConnection(host, portNumber);
     if (!isConnected) System.exit(0);
     CommData data = obtainNest();
-    data.
+
     mainGameLoop(data);
     closeAll();
   }
