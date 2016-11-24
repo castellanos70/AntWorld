@@ -20,7 +20,7 @@ public class PathFinder {
 
   private Coordinate start;
   private Coordinate end;
-  private int elevationCost;
+  private final int ELEVATIONCOST = 2;
   private StepComparator stepComparator;
   private PriorityQueue stepQueue;
   private final int WORLDWIDTH = 5000;  //Replace with world.getWorldWidth later
@@ -70,7 +70,7 @@ public class PathFinder {
     }
     try
     {
-      ImageIO.write(pathMap,"PNG",new File("c:\\Users\\John\\Desktop\\antWorldTest\\pathMapTest3.PNG"));
+      ImageIO.write(pathMap,"PNG",new File("c:\\Users\\John\\Desktop\\antWorldTest\\pathMapTest2.PNG"));
     } catch (IOException ie){
       ie.printStackTrace();
     }
@@ -107,6 +107,7 @@ public class PathFinder {
 
     Step lastStep = nextStep;
     pathTravelCost=lastStep.getTravelCostSoFar();
+    System.out.println("Path travelCost = " + pathTravelCost);
     steps.add(lastStep.getLocation());
     while(!pathBuilt)
     {
@@ -190,7 +191,20 @@ public class PathFinder {
       }
       else    //Add the new coordinate to the priority queue
       {
-        Coordinate nextCoord = new Coordinate(nextX,nextY);
+        Coordinate currentCoord = currentStep.getLocation();
+        Coordinate nextCoord;
+        int currentElevation = world[currentCoord.getX()][currentCoord.getY()].getHeight();
+        int nextElevation = world[nextX][nextY].getHeight();
+
+        if(nextElevation > currentElevation)  //If the next step in frontier has a higher elevation, raise travel cost
+        {
+          nextCoord = new Coordinate(nextX,nextY,ELEVATIONCOST);
+        }
+        else
+        {
+          nextCoord = new Coordinate(nextX,nextY);
+        }
+
         Step nextStep = new Step(nextCoord,currentStep,end);
         visited[nextX][nextY] = true;
         stepQueue.add(nextStep);
@@ -200,9 +214,9 @@ public class PathFinder {
 
   public static void main(String[] args)
   {
-    MapReader mapReader = new MapReader("resources/AntTestWorld7.png");
+    MapReader mapReader = new MapReader("resources/AntTestWorld11.png");
     PathFinder pathFinder = new PathFinder(mapReader.getWorld(), mapReader.getMapWidth(), mapReader.getMapWidth());
-    Path testPath = pathFinder.findPath(224,162,139,162); //Origin (224,162) Target (139,162)
+    Path testPath = pathFinder.findPath(62,263,135,196); //Origin (224,162) Target (139,162)
     pathFinder.drawPath(testPath);
   }
 
