@@ -1,5 +1,6 @@
 package antworld.client;
 
+import antworld.client.astar.PathFinder;
 import antworld.common.*;
 import antworld.server.Cell;
 
@@ -8,9 +9,11 @@ import antworld.server.Cell;
  */
 public abstract class Ant
 {
+  static PathFinder pathFinder;
   static int antsUnderground;
   Direction dir, lastDir;
   AntAction action;
+
 
   protected boolean pickupWater(AntData ant, Cell[][] world)
   {
@@ -20,6 +23,7 @@ public abstract class Ant
       {
         action.type = AntAction.AntActionType.PICKUP;
         action.direction = lastDir;
+        action.quantity = ant.antType.getCarryCapacity() - 1;
         return true;
       }
     }
@@ -34,15 +38,19 @@ public abstract class Ant
       {
         action.type = AntAction.AntActionType.PICKUP;
         action.direction = lastDir;
+        action.quantity = ant.antType.getCarryCapacity() - 1;
         return true;
       }
     }
     return  false;
   }
 
-  protected boolean goToNest(AntData ant)
+  protected boolean goToNest(AntData ant, Cell[][] world)
   {
-
+//    if (ant.carryUnits == ant.antType.getCarryCapacity())
+//    {
+//      pathFinder.findPath(centerX, centerY, ant.gridX, ant.gridY);
+//    }
     return false;
   }
 

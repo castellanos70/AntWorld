@@ -242,7 +242,7 @@ public class ClientRandomWalk
 
     if (goHomeIfCarryingOrHurt(ant, action)) return action;
 
-    if(lastDir != null)
+    if (lastDir != null)
     {
       if (pickUpFoodAdjacent(ant, action)) return action;
 
@@ -287,21 +287,28 @@ public class ClientRandomWalk
     return false;
   }
 
+  /**
+   * @todo make astar paint a path back home with the Rgb value to find a path once and not every turn
+   */
   private boolean goHomeIfCarryingOrHurt(AntData ant, AntAction action)
   {
+    if (ant.carryUnits == ant.antType.getCarryCapacity())
+    {
+      System.err.println("GOING BACK HOME");
+//      pathFinder.findPath(centerX + Constants.NEST_RADIUS - 1, centerY + Constants.NEST_RADIUS - 1, ant.gridX, ant.gridY);
+    }
     return false;
   }
 
   private boolean pickUpWater(AntData ant, AntAction action)
   {
-
     if (world[ant.gridX + lastDir.deltaX()][ant.gridY + lastDir.deltaY()].getLandType() == LandType.WATER)
     {
-//        System.err.println("water!!!!!");
+      System.err.println("water!!!!!");
       action.type = AntActionType.PICKUP;
       action.direction = lastDir;
+      action.quantity = ant.antType.getCarryCapacity() - 1;
       return true;
-
     }
     return false;
   }
