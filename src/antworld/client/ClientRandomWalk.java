@@ -15,6 +15,7 @@ import antworld.common.Direction;
 import antworld.common.NestNameEnum;
 import antworld.common.TeamNameEnum;
 import antworld.common.AntAction.AntActionType;
+import antworld.server.Cell;
 
 public class ClientRandomWalk
 {
@@ -26,6 +27,9 @@ public class ClientRandomWalk
   private boolean isConnected = false;
   private NestNameEnum myNestName = null;
   private int centerX, centerY;
+  private static PathFinder pathFinder;
+  private MapReader mapReader;
+  private Cell[][] world;
 
 
   private Socket clientSocket;
@@ -39,6 +43,9 @@ public class ClientRandomWalk
 
   public ClientRandomWalk(String host, int portNumber, TeamNameEnum team)
   {
+    mapReader = new MapReader("resources/AntTestWorld4.png");
+    world = mapReader.getWorld();
+    //pathFinder = new PathFinder(world);
     myTeam = team;
     System.out.println("Starting " + team + " on " + host + ":" + portNumber + " at "
         + System.currentTimeMillis());
