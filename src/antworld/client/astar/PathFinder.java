@@ -1,4 +1,4 @@
-package antworld.client;
+package antworld.client.astar;
 
 import antworld.common.Direction;
 import antworld.common.LandType;

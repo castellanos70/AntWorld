@@ -7,13 +7,9 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Random;
 
-import antworld.common.AntAction;
-import antworld.common.AntData;
-import antworld.common.CommData;
-import antworld.common.Constants;
-import antworld.common.Direction;
-import antworld.common.NestNameEnum;
-import antworld.common.TeamNameEnum;
+import antworld.client.astar.MapReader;
+import antworld.client.astar.PathFinder;
+import antworld.common.*;
 import antworld.common.AntAction.AntActionType;
 import antworld.server.Cell;
 
@@ -30,7 +26,7 @@ public class ClientRandomWalk
   private static PathFinder pathFinder;
   private MapReader mapReader;
   private Cell[][] world;
-
+  private Direction lastDir;
 
   private Socket clientSocket;
 
@@ -43,7 +39,7 @@ public class ClientRandomWalk
 
   public ClientRandomWalk(String host, int portNumber, TeamNameEnum team)
   {
-    mapReader = new MapReader("resources/AntTestWorld4.png");
+    mapReader = new MapReader("resources/AntTestWorld1.png");
     world = mapReader.getWorld();
     //pathFinder = new PathFinder(world);
     myTeam = team;
@@ -171,7 +167,6 @@ public class ClientRandomWalk
       try
       {
         if (DEBUG) System.out.println("ClientRandomWalk: chooseActions: " + myNestName);
-
         chooseActionsOfAllAnts(data);
         CommData sendData = data.packageForSendToServer();
 
@@ -245,11 +240,14 @@ public class ClientRandomWalk
 
     if (attackAdjacent(ant, action)) return action;
 
-    if (pickUpFoodAdjacent(ant, action)) return action;
-
     if (goHomeIfCarryingOrHurt(ant, action)) return action;
 
-    if (pickUpWater(ant, action)) return action;
+    if(lastDir != null)
+    {
+      if (pickUpFoodAdjacent(ant, action)) return action;
+
+      if (pickUpWater(ant, action)) return action;
+    }
 
     if (goToEnemyAnt(ant, action)) return action;
 
@@ -296,6 +294,15 @@ public class ClientRandomWalk
 
   private boolean pickUpWater(AntData ant, AntAction action)
   {
+
+    if (world[ant.gridX + lastDir.deltaX()][ant.gridY + lastDir.deltaY()].getLandType() == LandType.WATER)
+    {
+//        System.err.println("water!!!!!");
+      action.type = AntActionType.PICKUP;
+      action.direction = lastDir;
+      return true;
+
+    }
     return false;
   }
 
@@ -316,10 +323,43 @@ public class ClientRandomWalk
 
   private boolean goExplore(AntData ant, AntAction action)
   {
-    Direction dir = Direction.getRandomDir();
+    Direction dir;
+
+    if (ant.carryType == FoodType.WATER)
+    {
+      dir = Direction.WEST;
+    } else
+    {
+      dir = Direction.EAST;
+    }
     action.type = AntActionType.MOVE;
     action.direction = dir;
+    lastDir = dir;
     return true;
+  }
+
+  private Direction goOppositeDirection(Direction dir)
+  {
+    switch (dir)
+    {
+      case NORTH:
+        return Direction.SOUTH;
+      case SOUTH:
+        return Direction.NORTH;
+      case WEST:
+        return Direction.EAST;
+      case EAST:
+        return Direction.WEST;
+      case NORTHWEST:
+        return Direction.SOUTHEAST;
+      case NORTHEAST:
+        return Direction.SOUTHWEST;
+      case SOUTHWEST:
+        return Direction.NORTHEAST;
+      case SOUTHEAST:
+        return Direction.NORTHWEST;
+    }
+    return dir;
   }
 
   /**
@@ -336,7 +376,7 @@ public class ClientRandomWalk
     if (args.length > 0) serverHost = args[args.length - 1];
 
     TeamNameEnum team;
-    if(DEBUG) team = TeamNameEnum.John_Mauricio;
+    if (DEBUG) team = TeamNameEnum.John_Mauricio;
     else if (args.length > 1)
     {
       team = TeamNameEnum.getTeamByString(args[0]);

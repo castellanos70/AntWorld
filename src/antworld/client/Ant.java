@@ -1,6 +1,7 @@
 package antworld.client;
 
 import antworld.common.*;
+import antworld.server.Cell;
 
 /**
  * Created by mauricio on 11/23/16.
@@ -8,22 +9,41 @@ import antworld.common.*;
 public abstract class Ant
 {
   static int antsUnderground;
-  Direction lastDirection;
-  AntAction nextAction;
+  Direction dir, lastDir;
+  AntAction action;
 
-  protected boolean pickupWater(AntData ant)
+  protected boolean pickupWater(AntData ant, Cell[][] world)
   {
-//    if(LandType.WATER)
-//    {
-//      nextAction.type = AntAction.AntActionType.PICKUP;
-//      nextAction.direction = direction;
-//    }
+    if (lastDir != null)
+    {
+      if (world[ant.gridX+lastDir.deltaX()][ant.gridY+lastDir.deltaY()].getLandType() == LandType.WATER)
+      {
+        action.type = AntAction.AntActionType.PICKUP;
+        action.direction = lastDir;
+        return true;
+      }
+    }
     return false;
   }
 
-  protected boolean pickupFood(AntData ant, Direction direction)
+  protected boolean pickupFood(AntData ant, Cell[][] world)
   {
+    if (lastDir != null)
+    {
+      if (world[ant.gridX+lastDir.deltaX()][ant.gridY+lastDir.deltaY()].getFood() != null)
+      {
+        action.type = AntAction.AntActionType.PICKUP;
+        action.direction = lastDir;
+        return true;
+      }
+    }
     return  false;
+  }
+
+  protected boolean goToNest(AntData ant)
+  {
+
+    return false;
   }
 
 

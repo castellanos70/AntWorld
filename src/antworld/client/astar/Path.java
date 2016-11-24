@@ -1,4 +1,4 @@
-package antworld.client;
+package antworld.client.astar;
 
 import java.util.ArrayList;
 
